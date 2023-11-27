@@ -33,10 +33,13 @@ class Camera(BB):
     def step(self):
         levelWidth = len(self.app.level[0]) * 100
 
-        if self.app.player.getLeft() < self.getLeft() and self.getLeft() > 700:
+        # dragging to the left
+        if self.app.player.BB.getLeft() < self.getLeft() and self.getLeft() > 700:
             self.x = self.app.player.x
+
+        # dragging to the right
         if (
-            self.app.player.getRight() > self.getRight()
+            self.app.player.BB.getRight() > self.getRight()
             and self.getRight() < levelWidth - 1000
         ):
-            self.x = self.app.player.getRight() - self.width
+            self.x = self.app.player.BB.getRight() - self.width

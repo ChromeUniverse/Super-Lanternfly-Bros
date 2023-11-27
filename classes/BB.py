@@ -9,8 +9,6 @@ class BB:
         self.width = width
         self.height = height
 
-        self.height
-
     def draw(self):
         drawRect(
             self.x - self.app.camera.getOffset(),

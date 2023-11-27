@@ -3,27 +3,31 @@ from .BB import BB
 
 
 class Block:
-    def __init__(self, app, x, y, width=100, height=100):
+    def __init__(self, app, x, y, width=100, height=100, fill="gray"):
+        self.app = app
+        self.debug = False
+
         self.width = width
         self.height = height
         self.x = x
         self.y = y
-        self.debug = False
+
+        self.fill = fill
 
         # boundary boxes
-        self.BB = BB(app, x, y, width, height)
-        self.topBB = BB(app, x, y, width, height / 2)
-        self.rightBB = BB(app, x + width / 2, y, width / 2, height)
-        self.bottomBB = BB(app, x, y + height / 2, width, height / 2)
-        self.leftBB = BB(app, x, y, width / 2, height)
+        self.BB = BB(self.app, x, y, width, height)
+        self.topBB = BB(self.app, x, y, width, height / 2)
+        self.rightBB = BB(self.app, x + width / 2, y, width / 2, height)
+        self.bottomBB = BB(self.app, x, y + height / 2, width, height / 2)
+        self.leftBB = BB(self.app, x, y, width / 2, height)
 
     def draw(self):
         drawRect(
-            self.x - app.camera.getOffset(),
+            self.x - self.app.camera.getOffset(),
             self.y,
             self.width,
             self.height,
-            fill="gray",
+            fill=self.fill,
             border="black",
             borderWidth=4,
         )
