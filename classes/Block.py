@@ -14,12 +14,7 @@ class Block:
 
         self.fill = fill
 
-        # boundary boxes
         self.BB = BB(self.app, x, y, width, height)
-        self.topBB = BB(self.app, x, y, width, height / 2)
-        self.rightBB = BB(self.app, x + width / 2, y, width / 2, height)
-        self.bottomBB = BB(self.app, x, y + height / 2, width, height / 2)
-        self.leftBB = BB(self.app, x, y, width / 2, height)
 
     def draw(self):
         drawRect(
@@ -33,7 +28,21 @@ class Block:
         )
 
         if self.debug:
-            self.topBB.draw()
-            self.rightBB.draw()
-            self.bottomBB.draw()
-            self.leftBB.draw()
+            # main hitbox
+            self.BB.draw()
+
+            # vertical centerline
+            x = (
+                self.BB.getLeft() + self.BB.getRight()
+            ) / 2 - self.app.camera.getOffset()
+            drawLine(x, self.BB.getBottom(), x, self.BB.getTop(), fill="red")
+
+            # horizontal centerline
+            y = (self.BB.getBottom() + self.BB.getTop()) / 2
+            drawLine(
+                self.BB.getLeft() - self.app.camera.getOffset(),
+                y,
+                self.BB.getRight() - self.app.camera.getOffset(),
+                y,
+                fill="red",
+            )

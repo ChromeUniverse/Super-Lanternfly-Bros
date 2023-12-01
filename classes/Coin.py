@@ -5,7 +5,7 @@ from .BB import BB
 class Coin(BB):
     def __init__(self, app, x, y):
         super().__init__(app, x + 25, y, 50, 100)
-        self.debug = True
+        self.debug = False
         self.collected = False
 
     def draw(self):

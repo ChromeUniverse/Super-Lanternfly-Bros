@@ -6,7 +6,8 @@ from .Block import Block
 class Lanternfly:
     def __init__(self, app, x, y):
         self.app = app
-        self.debug = True
+        self.debug = False
+        self.points = 100
 
         self.x = x
         self.y = y
@@ -21,13 +22,6 @@ class Lanternfly:
         self.BB = BB(app, self.x, self.y, self.width, self.height)
         self.prevBB = BB(app, self.prevX, self.prevY, self.width, self.height)
 
-        self.topBB = BB(self.app, x, y, self.width, self.height / 2)
-        self.rightBB = BB(self.app, x + self.width / 2, y, self.width / 2, self.height)
-        self.bottomBB = BB(
-            self.app, x, y + self.height / 2, self.width, self.height / 2
-        )
-        self.leftBB = BB(self.app, x, y, self.width / 2, self.height)
-
         self.dead = False
 
     def draw(self):
@@ -40,12 +34,6 @@ class Lanternfly:
             self.height,
             fill=fill,
         )
-
-        if self.debug:
-            self.topBB.draw()
-            self.rightBB.draw()
-            self.bottomBB.draw()
-            self.leftBB.draw()
 
         if self.debug:
             drawRect(
@@ -66,14 +54,6 @@ class Lanternfly:
 
     def updateBB(self):
         self.BB = BB(app, self.x, self.y, self.width, self.height)
-        self.topBB = BB(self.app, self.x, self.y, self.width, self.height / 2)
-        self.rightBB = BB(
-            self.app, self.x + self.width / 2, self.y, self.width / 2, self.height
-        )
-        self.bottomBB = BB(
-            self.app, self.x, self.y + self.height / 2, self.width, self.height / 2
-        )
-        self.leftBB = BB(self.app, self.x, self.y, self.width / 2, self.height)
 
     def step(self):
         if self.dead:
@@ -87,37 +67,32 @@ class Lanternfly:
 
         # Collisions against blocks
 
-        # CITATION:
-        # Collision detection and handling algorithms inspireds by Chris Marriott's
-        # web-based recreation of Super Mario Bros, written in JavaScript.
-        #
-        # GitHub: https://github.com/algorithm0r/SuperMarioBros
-
         for i in range(len(self.app.blocks)):
             block: Block = self.app.blocks[i]
 
             if self.BB.isColliding(block.BB):
-                # horizontal collision
-                if self.BB.isColliding(block.topBB) and self.BB.isColliding(
-                    block.bottomBB
-                ):
-                    if self.BB.isColliding(block.leftBB):
-                        self.x = block.BB.getLeft() - 100
-                        self.updateBB()
-                        # print(f"left col. with block {i}", self.app.counter)
-                    elif self.BB.isColliding(block.rightBB):
-                        self.x = block.BB.getRight()
-                        self.updateBB()
-                        # print(f"right col. with block {i}", self.app.counter)
-
-                    self.dx = -self.dx
-
-                # hit block from above
+                # vertical collisions (above only)
                 if self.dy > 0 and self.prevBB.getBottom() <= block.BB.getTop():
                     self.y = block.BB.getTop() - 100
                     self.dy = 0
                     self.updateBB()
-                    # print(f"top col. with block {i}", self.app.counter)
+
+                # horizontal collisons
+                # checks if block's horizontal centerline is inside player's vertical edges
+                if (
+                    self.BB.getTop()
+                    < (block.BB.getBottom() + block.BB.getTop()) / 2
+                    < self.BB.getBottom()
+                ):
+                    # left
+                    if self.BB.getLeft() < block.BB.getLeft() < self.BB.getRight():
+                        self.x = block.BB.getLeft() - 100
+                        self.updateBB()
+                    # right
+                    elif self.BB.getLeft() < block.BB.getRight() < self.BB.getRight():
+                        self.x = block.BB.getRight()
+                        self.updateBB()
+                    self.dx = -self.dx
 
         self.prevX, self.prevY = self.x, self.y
         self.prevBB = self.BB

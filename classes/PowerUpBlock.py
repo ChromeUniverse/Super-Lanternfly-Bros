@@ -1,4 +1,5 @@
 from .Block import Block
+from .PowerUps import PowerUpPickUp
 from cmu_graphics import *
 
 
@@ -12,10 +13,12 @@ class PowerUpBlock(Block):
         # type 1: 5 coins
         # type 2: bug spray
         # type 3: flamethrower
-        if type == 0 or type == 2 or type == 3:
-            self.maxHitCount = 1
-        elif type == 1:
+        # type 4: meal block
+        # type 5: health potion
+        if type == 1:
             self.maxHitCount = 5
+        else:
+            self.maxHitCount = 1
 
     def hit(self):
         if self.hitCount == self.maxHitCount:
@@ -26,14 +29,26 @@ class PowerUpBlock(Block):
         # type 1: 5 coins
         # type 2: bug spray
         # type 3: flamethrower
+        # type 4: meal block
+        # type 5: health potion
         if self.type == 0 or self.type == 1:
             self.app.score += 100
         elif self.type == 2:
-            # TODO: equip bug spray
-            pass
+            self.app.powerUpPickUps.append(
+                PowerUpPickUp(self.app, self.x, self.y - 100, type=0)
+            )
         elif self.type == 3:
-            # TODO: equip flamethrower
-            pass
+            self.app.powerUpPickUps.append(
+                PowerUpPickUp(self.app, self.x, self.y - 100, type=1)
+            )
+        elif self.type == 4:
+            self.app.powerUpPickUps.append(
+                PowerUpPickUp(self.app, self.x, self.y - 100, type=2)
+            )
+        elif self.type == 5:
+            self.app.powerUpPickUps.append(
+                PowerUpPickUp(self.app, self.x, self.y - 100, type=3)
+            )
 
     def draw(self):
         fill = "brown" if self.hitCount == self.maxHitCount else "yellow"
@@ -52,15 +67,45 @@ class PowerUpBlock(Block):
         )
 
         if self.hitCount != self.maxHitCount:
-            drawLabel(
-                self.maxHitCount - self.hitCount,
-                centerX,
-                centerY,
-                size=36,
-                font="monospace",
-            )
+            # type 0: single coin
+            # type 1: 5 coins
+            if self.type == 0 or self.type == 1:
+                drawLabel(
+                    self.maxHitCount - self.hitCount,
+                    centerX,
+                    centerY,
+                    size=36,
+                    font="monosp`ace",
+                )
+            # type 2: bug spray
+            elif self.type == 2:
+                drawCircle(centerX, centerY, 20, fill="purple")
+            # type 3: flamethrower
+            elif self.type == 3:
+                drawCircle(centerX, centerY, 30, fill="orange")
+            # type 4: meal block
+            elif self.type == 4:
+                drawCircle(centerX, centerY, 30, fill="blue")
+            # type 4: health potion
+            elif self.type == 5:
+                drawCircle(centerX, centerY, 30, fill="lightGreen")
+
         if self.debug:
-            self.topBB.draw()
-            self.rightBB.draw()
-            self.bottomBB.draw()
-            self.leftBB.draw()
+            # main hitbox
+            self.BB.draw()
+
+            # vertical centerline
+            x = (
+                self.BB.getLeft() + self.BB.getRight()
+            ) / 2 - self.app.camera.getOffset()
+            drawLine(x, self.BB.getBottom(), x, self.BB.getTop(), fill="red")
+
+            # horizontal centerline
+            y = (self.BB.getBottom() + self.BB.getTop()) / 2
+            drawLine(
+                self.BB.getLeft() - self.app.camera.getOffset(),
+                y,
+                self.BB.getRight() - self.app.camera.getOffset(),
+                y,
+                fill="red",
+            )

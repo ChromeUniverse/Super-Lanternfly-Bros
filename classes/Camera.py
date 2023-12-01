@@ -5,7 +5,7 @@ from .BB import BB
 class Camera(BB):
     def __init__(self, app, x, y, width, height):
         super().__init__(app, x, y, width, height)
-        self.debug = True
+        self.debug = False
 
     def getOffset(self):
         offset = self.x - 700
@@ -31,7 +31,7 @@ class Camera(BB):
         )
 
     def step(self):
-        levelWidth = len(self.app.level[0]) * 100
+        # levelWidth = len(self.app.level[0]) * 100
 
         # dragging to the left
         if self.app.player.BB.getLeft() < self.getLeft() and self.getLeft() > 700:
@@ -40,6 +40,6 @@ class Camera(BB):
         # dragging to the right
         if (
             self.app.player.BB.getRight() > self.getRight()
-            and self.getRight() < levelWidth - 1000
+            and self.getRight() < app.levelWidth - 1000
         ):
             self.x = self.app.player.BB.getRight() - self.width
