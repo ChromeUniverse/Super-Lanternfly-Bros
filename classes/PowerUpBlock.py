@@ -1,3 +1,4 @@
+from helpers.misc import playAnimation
 from .Block import Block
 from .PowerUps import PowerUpPickUp
 from cmu_graphics import *
@@ -33,6 +34,9 @@ class PowerUpBlock(Block):
         # type 5: health potion
         if self.type == 0 or self.type == 1:
             self.app.score += 100
+            playAnimation(
+                app, self.x + 50, self.y - 50, "assets/coin-2.gif", playCount=2, delay=3
+            )
         elif self.type == 2:
             self.app.powerUpPickUps.append(
                 PowerUpPickUp(self.app, self.x, self.y - 100, type=0)

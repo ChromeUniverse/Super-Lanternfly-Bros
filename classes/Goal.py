@@ -8,7 +8,7 @@ class Goal:
         self.x = x
         self.y = y
         self.BB = BB(app, x, -1000, 100, 2000)
-        self.debug = True
+        self.debug = False
 
     def draw(self):
         x = self.x - self.app.camera.getOffset()

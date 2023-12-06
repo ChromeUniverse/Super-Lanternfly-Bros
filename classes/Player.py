@@ -2,6 +2,8 @@ from cmu_graphics import *
 import math
 import time
 
+from helpers.misc import playAnimation
+
 from .BB import BB
 from .Block import Block
 from .PowerUpBlock import PowerUpBlock
@@ -20,8 +22,8 @@ class Player:
         # physical properties
         self.width = 100
         self.height = 100
-        self.x = 0
-        self.y = 200
+        self.x = 100
+        self.y = 100
         self.prevX = 0
         self.prevY = 500
         self.dx = 0
@@ -168,11 +170,12 @@ class Player:
             self.cooldown = False
             self.cooldownStartTime = None
 
-        # End goal
+        # reached End goal
 
         if not self.app.gameOver and self.BB.getRight() > self.app.goal.BB.getRight():
             self.app.gameOver = True
             self.app.win = True
+            self.app.levelsCleared += 1
 
             self.x = self.app.goal.BB.getLeft()
             self.dx = 0
@@ -252,6 +255,15 @@ class Player:
                     enemy.dead = True
                     self.app.score += enemy.points
                     # print(f"stomp'd enemy {i}", self.app.counter)
+                    playAnimation(
+                        app,
+                        enemy.x + 50,
+                        enemy.y + 50,
+                        "assets/explosion.gif",
+                        sizeX=200,
+                        sizeY=200,
+                    )
+
                 # take damage, trigger cooldown
                 else:
                     self.takeDamage()

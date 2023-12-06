@@ -1,13 +1,46 @@
 from cmu_graphics import *
+from PIL import Image
 import time
+
+
+def onAppStart(app):
+    # Open image from local directory
+    app.image = Image.open("images/Caaaaat.jpg")
+    app.image = app.image.resize((400, 400))
+
+    # Cast image type to CMUImage to allow for faster drawing
+    app.image = CMUImage(app.image)
+    app.angle = 0
+
+
+def onStep(app):
+    app.angle += 5
+
+
+def redrawAll(app):
+    # drawPILImage takes in a PIL image object and the left-top coordinates
+    drawImage(
+        app.image, app.width / 2, app.height / 2, align="center", rotateAngle=app.angle
+    )
 
 
 def drawUI(app):
     font = "monospace"
 
-    # Player name & healthbar
+    # Healthbar
     barWidth = 350
-    drawLabel(app.player.name, 100, 50, size=36, align="left", font=font, bold=True)
+    drawLabel(
+        "HP",
+        100,
+        50,
+        size=36,
+        align="left",
+        font=font,
+        bold=True,
+        fill="white",
+        border="black",
+        borderWidth=1,
+    )
     drawRect(100, 82, barWidth, 35, fill="red")
     if app.player.HP > 0:
         drawRect(
@@ -27,6 +60,9 @@ def drawUI(app):
         align="left",
         font=font,
         bold=True,
+        fill="white",
+        border="black",
+        borderWidth=1,
     )
     drawRect(100, 192, barWidth, 35, fill="red")
     if app.player.hunger > 0:
@@ -48,6 +84,9 @@ def drawUI(app):
             align="left",
             font=font,
             bold=True,
+            fill="white",
+            border="black",
+            borderWidth=1,
         )
         drawRect(100, 302, barWidth, 35, fill="red")
         if app.powerUp.v > 0:
@@ -60,15 +99,48 @@ def drawUI(app):
             )
 
     # Score
-    drawLabel("Score", 700, 50, size=36, align="left", font=font, opacity=50)
+    drawLabel(
+        "Score",
+        700,
+        50,
+        size=36,
+        align="left",
+        font=font,
+        bold=True,
+        fill="white",
+        border="black",
+        borderWidth=1,
+    )
     drawLabel(app.score, 700, 100, size=36, align="left", font=font, bold=True)
 
     # Level indicator
-    drawLabel("Level", 1000, 50, size=36, align="left", font=font, opacity=50)
-    drawLabel(0, 1000, 100, size=36, align="left", font=font, bold=True)
+    drawLabel(
+        "Level",
+        1000,
+        50,
+        size=36,
+        align="left",
+        font=font,
+        bold=True,
+        fill="white",
+        border="black",
+        borderWidth=1,
+    )
+    drawLabel(app.levelsCleared, 1000, 100, size=36, align="left", font=font, bold=True)
 
     # Time left
-    drawLabel("Time", 1300, 50, size=36, align="left", font=font, opacity=50)
+    drawLabel(
+        "Time",
+        1300,
+        50,
+        size=36,
+        align="left",
+        font=font,
+        bold=True,
+        fill="white",
+        border="black",
+        borderWidth=1,
+    )
     # elapsed = time.time() if app.endTime == None else app.endTime
     timeLeft = (
         0
@@ -104,17 +176,27 @@ def drawUI(app):
             "Press '1' to load a hardcoded level",
             app.width / 2,
             app.height / 2 + 150,
-            size=50,
+            size=40,
             fill="white",
             border="black",
             borderWidth=2,
             bold=True,
         )
         drawLabel(
-            "Press '2' to load a randomly-generated level",
+            "Press '2' to load a random level (pre-built chunks)",
             app.width / 2,
-            app.height / 2 + 220,
-            size=50,
+            app.height / 2 + 200,
+            size=40,
+            fill="white",
+            border="black",
+            borderWidth=2,
+            bold=True,
+        )
+        drawLabel(
+            "Press '3' to load a random level (complex logic)",
+            app.width / 2,
+            app.height / 2 + 250,
+            size=40,
             fill="white",
             border="black",
             borderWidth=2,

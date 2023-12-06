@@ -6,10 +6,11 @@ from classes.PowerUps import PowerUp
 from classes.Camera import Camera
 
 from helpers.drawUI import drawUI
-from helpers.levels import loadHardCodedLevel, loadRandomLevel
+from helpers.levels import loadHardCodedLevel, loadRandomLevel1, loadRandomLevel2
+from PIL import Image
 
 
-def reset(app, randomLevel=False):
+def reset(app, levelType):
     app.score = 0
     app.gameOver = False
     app.win = False
@@ -21,6 +22,7 @@ def reset(app, randomLevel=False):
     app.endTime = None
 
     # entities
+    app.animations = []
     app.blocks = []
     app.enemies = []
     app.coins = []
@@ -28,10 +30,12 @@ def reset(app, randomLevel=False):
     app.goal = None
 
     # load level
-    if randomLevel:
-        app.levelWidth = loadRandomLevel(app)
-    else:
+    if levelType == 1:
         app.levelWidth = loadHardCodedLevel(app)
+    elif levelType == 2:
+        app.levelWidth = loadRandomLevel1(app)
+    elif levelType == 3:
+        app.levelWidth = loadRandomLevel2(app)
 
     # initialize camera
     app.camera = Camera(app, 700, 0, 300, app.height)
@@ -41,21 +45,34 @@ def reset(app, randomLevel=False):
 
     # powerUps!
     app.powerUp = None
-    # app.powerUp = PowerUp(app, 1)
+    app.powerUp = PowerUp(app, 1)
     app.powerUpTrigger = False
 
 
 def onAppStart(app):
-    reset(app)
+    app.levelsCleared = 0
+    reset(app, levelType=1)
     # game framerate
     # app.stepsPerSecond = 10
 
+    app.image = Image.open("assets/pitt-1.jpg")
+    app.image = app.image.resize((2000, 1000))
+    app.image = CMUImage(app.image)
+
 
 def onKeyPress(app, key):
+    # hardcoded level
     if key == "1":
-        reset(app, randomLevel=False)
+        reset(app, levelType=1)
+    # random level (pre-built chunks)
     if key == "2":
-        reset(app, randomLevel=True)
+        reset(app, levelType=2)
+    # random level (generation logic and pathfinding)
+    if key == "3":
+        reset(app, levelType=3)
+    # instakill
+    if key == "k":
+        app.player.HP = 0
 
 
 def onKeyHold(app, keys):
@@ -82,6 +99,10 @@ def onKeyRelease(app, key):
 
 
 def redrawAll(app):
+    # background image
+    drawImage(app.image, app.width / 2, app.height / 2, align="center")
+    drawRect(0, 0, app.width, app.height, fill="lightCyan", opacity=50)
+
     for enemy in app.enemies:
         enemy.draw()
 
@@ -93,6 +114,9 @@ def redrawAll(app):
 
     for pickUp in app.powerUpPickUps:
         pickUp.draw()
+
+    for animation in app.animations:
+        animation.draw()
 
     app.goal.draw()
     app.camera.draw()
@@ -114,6 +138,9 @@ def takeStep(app):
         app.gameOver = True
         app.win = False
 
+    for coin in app.coins:
+        coin.step()
+
     for enemy in app.enemies:
         enemy.step()
 
@@ -121,6 +148,10 @@ def takeStep(app):
         app.powerUp.step()
         if app.powerUp.v <= 0:
             app.powerUp = None
+
+    for a in app.animations:
+        a.step()
+    app.animations = [a for a in app.animations if not a.finished]
 
 
 def onStep(app):

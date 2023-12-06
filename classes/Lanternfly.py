@@ -1,4 +1,5 @@
 from cmu_graphics import *
+import math
 from .BB import BB
 from .Block import Block
 
@@ -25,15 +26,123 @@ class Lanternfly:
         self.dead = False
 
     def draw(self):
-        fill = "blue" if not self.dead else "red"
+        centerX, centerY = self.x - self.app.camera.getOffset() + 50, self.y + 50
 
-        drawRect(
-            self.x - self.app.camera.getOffset(),
-            self.y,
-            self.width,
-            self.height,
-            fill=fill,
+        if self.dead:
+            return
+
+        drawOval(
+            centerX,
+            centerY,
+            80,
+            40,
+            fill="slateGray",
         )
+
+        if self.dx < 0:
+            drawOval(
+                centerX + 20,
+                centerY - 15,
+                40,
+                30,
+                fill="red",
+                border="black",
+                borderWidth=3,
+                rotateAngle=-10,
+            )
+
+            drawOval(
+                centerX + 20,
+                centerY + 15,
+                40,
+                30,
+                fill="red",
+                border="black",
+                borderWidth=3,
+                rotateAngle=10,
+            )
+
+            pivotX, pivotY = (centerX - 15, centerY + 10)
+            width, height = 70, 30
+            angle = -30 * (1 + math.sin(app.counter * 1))
+
+            drawOval(
+                pivotX + (width / 2) * math.cos(angle * math.pi / 180),
+                pivotY - (width / 2) * math.sin(angle * math.pi / 180),
+                width,
+                height,
+                fill="black",
+                border="beige",
+                borderWidth=1,
+                rotateAngle=-angle,
+            )
+
+            pivotX, pivotY = (centerX - 15, centerY - 10)
+            width, height = 70, 30
+            angle = 30 * (1 + math.sin(app.counter * 1))
+
+            drawOval(
+                pivotX + (width / 2) * math.cos(angle * math.pi / 180),
+                pivotY - (width / 2) * math.sin(angle * math.pi / 180),
+                width,
+                height,
+                fill="black",
+                border="beige",
+                borderWidth=1,
+                rotateAngle=-angle,
+            )
+        else:
+            drawOval(
+                centerX - 20,
+                centerY + 15,
+                40,
+                30,
+                fill="red",
+                border="black",
+                borderWidth=3,
+                rotateAngle=-10,
+            )
+
+            drawOval(
+                centerX - 20,
+                centerY - 15,
+                40,
+                30,
+                fill="red",
+                border="black",
+                borderWidth=3,
+                rotateAngle=10,
+            )
+
+            pivotX, pivotY = (centerX + 15, centerY + 10)
+            width, height = 70, 30
+            angle = math.pi - 30 * (1 + math.sin(app.counter * 1))
+
+            drawOval(
+                pivotX - (width / 2) * math.cos(angle * math.pi / 180),
+                pivotY - (width / 2) * math.sin(angle * math.pi / 180),
+                width,
+                height,
+                fill="black",
+                border="beige",
+                borderWidth=1,
+                rotateAngle=angle,
+            )
+
+            pivotX, pivotY = (centerX + 15, centerY - 10)
+            width, height = 70, 30
+            angle = -(math.pi + 30 * (1 + math.sin(app.counter * 1)))
+
+            drawOval(
+                pivotX - (width / 2) * math.cos(angle * math.pi / 180),
+                pivotY + (width / 2) * math.sin(angle * math.pi / 180),
+                width,
+                height,
+                fill="black",
+                border="beige",
+                borderWidth=1,
+                rotateAngle=-angle,
+            )
 
         if self.debug:
             drawRect(

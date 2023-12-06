@@ -1,5 +1,7 @@
 from cmu_graphics import *
 import math
+
+from helpers.misc import playAnimation
 from .BB import BB
 
 
@@ -30,6 +32,17 @@ class PowerUpPickUp(BB):
             80,
             80,
             fill=fill,
+            rotateAngle=app.counter % 360 * 10,
+        )
+
+        drawRect(
+            self.x + 25 - self.app.camera.getOffset(),
+            self.y + 25,
+            50,
+            50,
+            fill="white",
+            opacity=50,
+            rotateAngle=-app.counter % 360 * 10,
         )
 
 
@@ -80,33 +93,63 @@ class PowerUp:
         fill = None
         if self.type == 0:
             fill = "purple"
+
+            # oscillating opacity
+            opacity = 50 + math.sin(self.app.counter % 10) * 50
+
+            if self.app.player.direction == 1:
+                drawCircle(
+                    self.app.player.BB.getRight() - self.app.camera.getOffset() + 50,
+                    self.app.player.y + 50,
+                    50,
+                    fill=fill,
+                    opacity=opacity,
+                )
+
+            elif self.app.player.direction == 0:
+                drawCircle(
+                    self.app.player.BB.getLeft()
+                    - self.bbWidth
+                    - self.app.camera.getOffset()
+                    + 50,
+                    self.app.player.y + 50,
+                    50,
+                    fill=fill,
+                    opacity=opacity,
+                )
+
         elif self.type == 1:
             fill = "orange"
+            if self.app.player.direction == 1:
+                for i in range(5):
+                    opacity = 50 + math.sin(self.app.counter % 10 + 0.4 * i) * 50
+                    drawCircle(
+                        self.app.player.BB.getRight()
+                        - self.app.camera.getOffset()
+                        + 50
+                        + 50 * i,
+                        self.app.player.y + 50,
+                        50,
+                        fill=fill,
+                        opacity=opacity,
+                        border="white",
+                        borderWidth=2,
+                    )
 
-        # oscillating opacity
-        opacity = 50 + math.sin(self.app.counter % 10) * 50
-
-        if self.app.player.direction == 1:
-            drawRect(
-                self.app.player.BB.getRight() - self.app.camera.getOffset(),
-                self.app.player.y,
-                self.bbWidth,
-                self.bbHeight,
-                fill=fill,
-                opacity=opacity,
-            )
-
-        elif self.app.player.direction == 0:
-            drawRect(
-                self.app.player.BB.getLeft()
-                - self.bbWidth
-                - self.app.camera.getOffset(),
-                self.app.player.y,
-                self.bbWidth,
-                self.bbHeight,
-                fill=fill,
-                opacity=opacity,
-            )
+            elif self.app.player.direction == 0:
+                for i in range(5):
+                    opacity = 50 + math.sin(self.app.counter % 10 + 0.4 * i) * 50
+                    drawCircle(
+                        self.app.player.BB.getLeft()
+                        - self.bbWidth
+                        - self.app.camera.getOffset()
+                        + 50
+                        + 50 * i,
+                        self.app.player.y + 50,
+                        50,
+                        fill=fill,
+                        opacity=opacity,
+                    )
 
     def step(self):
         # consumes a bit of volume very step
@@ -136,3 +179,11 @@ class PowerUp:
             if enemy.BB != None and self.BB.isColliding(enemy.BB) and not enemy.dead:
                 enemy.dead = True
                 self.app.score += enemy.points
+                playAnimation(
+                    app,
+                    enemy.x + 50,
+                    enemy.y + 50,
+                    "assets/explosion.gif",
+                    sizeX=200,
+                    sizeY=200,
+                )
